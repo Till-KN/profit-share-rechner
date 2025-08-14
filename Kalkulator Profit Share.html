@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Berechnung Profit Share</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f8ff; /* Hellblauer Hintergrund */
+            color: #333; /* Kontrastreiche Schriftfarbe */
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+ 
+        h1, h2 {
+            color: #0056b3; /* Dunkler Blauton */
+        }
+ 
+        form {
+            background-color: #ffffff; /* Weißer Hintergrund */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            margin: 20px auto;
+        }
+ 
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+ 
+        input[type="number"] {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+ 
+        button {
+            background-color: #007bff; /* Leuchtender Blauton */
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            font-size: 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+ 
+        button:hover {
+            background-color: #0056b3; /* Dunkler Blauton beim Hover */
+        }
+ 
+        #result {
+            margin-top: 20px;
+            font-size: 1.2rem;
+            color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Berechnung Profit Share</h1>	
+    <form id="profitForm">
+        <h2>Invoice Entry (Revenue)</h2>
+        <label for="sfVerkauf">Seefracht</label>
+        <input type="number" id="sfVerkauf" name="sfVerkauf" placeholder="Wert eingeben">
+ 
+        <label for="bucVerkauf">BUC</label>
+        <input type="number" id="bucVerkauf" name="bucVerkauf" placeholder="Wert eingeben">
+ 
+        <label for="etsVerkauf">ETS/EEC/sonstige Zuschläge</label>
+        <input type="number" id="etsVerkauf" name="etsVerkauf" placeholder="Wert eingeben">
+ 
+        <h2>Cost Entry (Expense)</h2>
+        <label for="sfEinkauf">Seefracht</label>
+        <input type="number" id="sfEinkauf" name="sfEinkauf" placeholder="Wert eingeben">
+ 
+        <label for="bucEinkauf">BUC</label>
+        <input type="number" id="bucEinkauf" name="bucEinkauf" placeholder="Wert eingeben">
+ 
+        <label for="etsEinkauf">ETS/EEC/sonstige Zuschläge</label>
+        <input type="number" id="etsEinkauf" name="etsEinkauf" placeholder="Wert eingeben">
+ 
+        <button type="button" onclick="calculateProfit()">Berechnen</button>
+    </form>
+    <p id="result"></p>
+ 
+    <script>
+        function calculateProfit() {
+            const sfVerkauf = parseFloat(document.getElementById('sfVerkauf').value) || 0;
+            const bucVerkauf = parseFloat(document.getElementById('bucVerkauf').value) || 0;
+            const etsVerkauf = parseFloat(document.getElementById('etsVerkauf').value) || 0;
+ 
+            const sfEinkauf = parseFloat(document.getElementById('sfEinkauf').value) || 0;
+            const bucEinkauf = parseFloat(document.getElementById('bucEinkauf').value) || 0;
+            const etsEinkauf = parseFloat(document.getElementById('etsEinkauf').value) || 0;
+ 
+            const verkauf = sfVerkauf + bucVerkauf + etsVerkauf;
+            const einkauf = sfEinkauf + bucEinkauf + etsEinkauf;
+            const profitShare = ((verkauf - einkauf) / 2).toFixed(2).replace('.', ',');
+ 
+            document.getElementById('result').innerText = `Profit Share beträgt ${profitShare} und kann mit Charge Code 950 an KNARBUEFS abgerechnet werden.`;
+        }
+    </script>
+</body>
+</html>
