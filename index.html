@@ -7,43 +7,52 @@
     <style>
         body {
             font-family: 'Arial', sans-serif;
-            background-color: #f0f8ff; /* Hellblauer Hintergrund */
-            color: #333; /* Kontrastreiche Schriftfarbe */
+            background-color: #f0f8ff;
+            color: #333;
             margin: 0;
             padding: 20px;
-            line-height: 1.6;
         }
- 
+
         h1, h2 {
-            color: #0056b3; /* Dunkler Blauton */
+            color: #0056b3;
+            text-align: center;
         }
- 
+
         form {
-            background-color: #ffffff; /* Weißer Hintergrund */
+            background-color: #ffffff;
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            max-width: 500px;
+            max-width: 600px;
             margin: 20px auto;
         }
- 
+
+        .form-section {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
         label {
-            display: block;
-            margin-bottom: 5px;
             font-weight: bold;
         }
- 
+
         input[type="number"] {
-            width: calc(100% - 22px);
             padding: 10px;
-            margin-bottom: 15px;
             border: 1px solid #ccc;
             border-radius: 5px;
             font-size: 1rem;
+            width: 100%;
         }
- 
+
+        .button-row {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+
         button {
-            background-color: #007bff; /* Leuchtender Blauton */
+            background-color: #007bff;
             color: #fff;
             border: none;
             padding: 10px 15px;
@@ -52,61 +61,129 @@
             cursor: pointer;
             transition: background-color 0.3s ease;
         }
- 
+
         button:hover {
-            background-color: #0056b3; /* Dunkler Blauton beim Hover */
+            background-color: #0056b3;
         }
- 
+
         #result {
             margin-top: 20px;
             font-size: 1.2rem;
-            color: #0056b3;
+            color: #333;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            background-color: transparent;
+        }
+
+        .dynamic-field {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .dynamic-field input[type="number"] {
+            flex: 1;
+        }
+
+        .dynamic-field button {
+            background-color: #dc3545;
+        }
+
+        .dynamic-field button:hover {
+            background-color: #a71d2a;
         }
     </style>
 </head>
 <body>
-    <h1>Berechnung Profit Share</h1>	
+    <h1>Berechnung Profit Share</h1>
     <form id="profitForm">
         <h2>Invoice Entry (Revenue)</h2>
-        <label for="sfVerkauf">Seefracht</label>
-        <input type="number" id="sfVerkauf" name="sfVerkauf" placeholder="Wert eingeben">
- 
-        <label for="bucVerkauf">BUC</label>
-        <input type="number" id="bucVerkauf" name="bucVerkauf" placeholder="Wert eingeben">
- 
-        <label for="etsVerkauf">ETS/EEC/sonstige Zuschläge</label>
-        <input type="number" id="etsVerkauf" name="etsVerkauf" placeholder="Wert eingeben">
- 
+        <div class="form-section">
+            <label for="sfVerkauf">Seefracht</label>
+            <input id="sfVerkauf" name="sfVerkauf" type="number" placeholder="Wert eingeben">
+            <label for="bucVerkauf">BUC</label>
+            <input id="bucVerkauf" name="bucVerkauf" type="number" placeholder="Wert eingeben">
+            <label for="etsVerkauf">ETS</label>
+            <input id="etsVerkauf" name="etsVerkauf" type="number" placeholder="Wert eingeben">
+            <div id="dynamicVerkaufFields"></div>
+            <div class="button-row">
+                <button type="button" id="addVerkauf">+ Weitere</button>
+            </div>
+        </div>
+
         <h2>Cost Entry (Expense)</h2>
-        <label for="sfEinkauf">Seefracht</label>
-        <input type="number" id="sfEinkauf" name="sfEinkauf" placeholder="Wert eingeben">
- 
-        <label for="bucEinkauf">BUC</label>
-        <input type="number" id="bucEinkauf" name="bucEinkauf" placeholder="Wert eingeben">
- 
-        <label for="etsEinkauf">ETS/EEC/sonstige Zuschläge</label>
-        <input type="number" id="etsEinkauf" name="etsEinkauf" placeholder="Wert eingeben">
- 
-        <button type="button" onclick="calculateProfit()">Berechnen</button>
+        <div class="form-section">
+            <label for="sfEinkauf">Seefracht</label>
+            <input id="sfEinkauf" name="sfEinkauf" type="number" placeholder="Wert eingeben">
+            <label for="bucEinkauf">BUC</label>
+            <input id="bucEinkauf" name="bucEinkauf" type="number" placeholder="Wert eingeben">
+            <label for="etsEinkauf">ETS</label>
+            <input id="etsEinkauf" name="etsEinkauf" type="number" placeholder="Wert eingeben">
+            <div id="dynamicEinkaufFields"></div>
+            <div class="button-row">
+                <button type="button" id="addEinkauf">+ Weitere</button>
+                <button type="submit" id="calculateBtn">Berechnen</button>
+            </div>
+        </div>
     </form>
     <p id="result"></p>
- 
+
     <script>
-        function calculateProfit() {
+        let fieldCount = 0;
+
+        function addField(containerId) {
+            fieldCount++;
+            const container = document.getElementById(containerId);
+            const div = document.createElement("div");
+            div.className = "dynamic-field";
+            div.id = "field" + fieldCount;
+
+            const valueInput = document.createElement("input");
+            valueInput.type = "number";
+            valueInput.name = "value" + fieldCount;
+            valueInput.placeholder = "Wert eingeben";
+            valueInput.className = "dynamic-value";
+
+            const deleteButton = document.createElement("button");
+            deleteButton.type = "button";
+            deleteButton.textContent = "Löschen";
+            deleteButton.onclick = () => container.removeChild(div);
+
+            div.appendChild(valueInput);
+            div.appendChild(deleteButton);
+            container.appendChild(div);
+        }
+
+        document.getElementById("addVerkauf").addEventListener("click", () => addField("dynamicVerkaufFields"));
+        document.getElementById("addEinkauf").addEventListener("click", () => addField("dynamicEinkaufFields"));
+
+        document.getElementById("profitForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+
             const sfVerkauf = parseFloat(document.getElementById('sfVerkauf').value) || 0;
             const bucVerkauf = parseFloat(document.getElementById('bucVerkauf').value) || 0;
             const etsVerkauf = parseFloat(document.getElementById('etsVerkauf').value) || 0;
- 
+
             const sfEinkauf = parseFloat(document.getElementById('sfEinkauf').value) || 0;
             const bucEinkauf = parseFloat(document.getElementById('bucEinkauf').value) || 0;
             const etsEinkauf = parseFloat(document.getElementById('etsEinkauf').value) || 0;
- 
-            const verkauf = sfVerkauf + bucVerkauf + etsVerkauf;
-            const einkauf = sfEinkauf + bucEinkauf + etsEinkauf;
+
+            let verkauf = sfVerkauf + bucVerkauf + etsVerkauf;
+            let einkauf = sfEinkauf + bucEinkauf + etsEinkauf;
+
+            document.querySelectorAll("#dynamicVerkaufFields .dynamic-value").forEach(input => {
+                verkauf += parseFloat(input.value) || 0;
+            });
+
+            document.querySelectorAll("#dynamicEinkaufFields .dynamic-value").forEach(input => {
+                einkauf += parseFloat(input.value) || 0;
+            });
+
             const profitShare = ((verkauf - einkauf) / 2).toFixed(2).replace('.', ',');
- 
-            document.getElementById('result').innerText = `Profit Share beträgt ${profitShare} und kann mit Charge Code 950 an KNARBUEFS abgerechnet werden.`;
-        }
+
+            document.getElementById('result').innerText = `Profit Share beträgt ${profitShare} und kann mit Charge Code 950 an Übersee abgerechnet werden.`;
+        });
     </script>
 </body>
 </html>
